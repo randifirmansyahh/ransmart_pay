@@ -1,8 +1,8 @@
 package productModel
 
 import (
-	"ransmart_pay/app/helper/modelHelper"
 	"ransmart_pay/app/models/categoryModel"
+	"ransmart_pay/app/models/modelHelper"
 )
 
 type Product struct {

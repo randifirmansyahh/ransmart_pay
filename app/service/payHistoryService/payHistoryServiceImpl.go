@@ -8,6 +8,7 @@ import (
 	"ransmart_pay/app/helper/helper"
 	"ransmart_pay/app/helper/tokenHelper"
 	"ransmart_pay/app/httpRequest"
+	"ransmart_pay/app/models/notifModel"
 	"ransmart_pay/app/models/orderModel"
 	"ransmart_pay/app/models/payHistoryModel"
 	"ransmart_pay/app/repository"
@@ -127,6 +128,28 @@ func (s *service) Create(data payHistoryModel.PayHistoryReq) (err error) {
 		log.Error().Msgf("error get order: %v, result : ", err, result)
 		return errors.New("gagal mengupdate data order")
 	}
+
+	go func() {
+		reqNotif := notifModel.NotifHttpResponse{
+			OrderId: data.OrderId,
+			Message: "Pembayaran berhasil",
+			Data: notifModel.NotifResponse{
+				Username:  data.Username,
+				ProductId: resOrder.Data.Product.Id,
+				Qty:       resOrder.Data.Qty,
+				Total:     resOrder.Data.Total,
+			},
+		}
+
+		log.Info().Msgf("request notif: %v", reqNotif)
+		newReqNotif, _ := json.Marshal(reqNotif)
+		urlNotif := "https://ransmart-notifies.herokuapp.com/publis"
+		code, result, err = httpRequest.HTTPResponse("POST", urlNotif, string(newReqNotif), header)
+		if err != nil || code != 200 {
+			log.Error().Msgf("failed to send message broker : %v, result : ", err, result)
+		}
+		log.Info().Msgf("result notif: %v", result)
+	}()
 
 	tx.Commit()
 	return

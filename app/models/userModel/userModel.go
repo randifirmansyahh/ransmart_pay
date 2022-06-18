@@ -1,6 +1,6 @@
 package userModel
 
-import "ransmart_pay/app/helper/modelHelper"
+import "ransmart_pay/app/models/modelHelper"
 
 type User struct {
 	Id        int    `gorm:"primaryKey;autoIncrement;" json:"id"`

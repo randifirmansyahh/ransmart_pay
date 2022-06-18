@@ -1,6 +1,6 @@
 package categoryModel
 
-import "ransmart_pay/app/helper/modelHelper"
+import "ransmart_pay/app/models/modelHelper"
 
 type Category struct {
 	Id   int    `gorm:"primaryKey;autoIncrement;" json:"id"`
