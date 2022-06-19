@@ -99,7 +99,7 @@ func (s *service) Create(data payHistoryModel.PayHistoryReq) (err error) {
 		return errors.New("saldo tidak mencukupi, saldo = Rp." + fmt.Sprint(findSaldo.Saldo) + ", pembayaran = Rp." + fmt.Sprint(TOTAL))
 	}
 
-	if resOrder.Data.Qty < resOrder.Data.Product.Qty {
+	if resOrder.Data.Product.Qty < resOrder.Data.Qty {
 		log.Error().Msgf("stok tidak cukup")
 		return errors.New("stok tidak mencukupi")
 	}
