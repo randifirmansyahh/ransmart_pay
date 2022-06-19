@@ -80,7 +80,7 @@ func (s *service) Create(data payHistoryModel.PayHistoryReq) (err error) {
 	}
 
 	// find order from ransmart_product
-	log.Printf("find order di ransmart-product")
+	log.Info().Msgf("find order by id: %v", data.OrderId)
 	url := "https://ransmart-product.herokuapp.com/order/id/" + fmt.Sprint(data.OrderId)
 	code, result, err := httpRequest.HTTPResponse("GET", url, "", header)
 	if err != nil || code != 200 {
@@ -89,7 +89,7 @@ func (s *service) Create(data payHistoryModel.PayHistoryReq) (err error) {
 	}
 
 	// fill result to data
-	log.Printf("berhasil get order")
+	log.Info().Msgf("result: %v", result)
 	var resOrder orderModel.OrderHttpResponse
 	json.Unmarshal([]byte(result), &resOrder)
 
@@ -97,6 +97,11 @@ func (s *service) Create(data payHistoryModel.PayHistoryReq) (err error) {
 	if TOTAL > findSaldo.Saldo {
 		log.Error().Msgf("saldo tidak cukup")
 		return errors.New("saldo tidak mencukupi, saldo = Rp." + fmt.Sprint(findSaldo.Saldo) + ", pembayaran = Rp." + fmt.Sprint(TOTAL))
+	}
+
+	if resOrder.Data.Qty < resOrder.Data.Product.Qty {
+		log.Error().Msgf("stok tidak cukup")
+		return errors.New("stok tidak mencukupi")
 	}
 
 	request := payHistoryModel.PayHistoryModel{
